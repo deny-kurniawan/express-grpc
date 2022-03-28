@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+service SupplierService {
+    rpc GetAll (Empty) returns (SupplierList) {}
+    rpc Insert (Supplier) returns (Supplier) {}
+    rpc Update (Supplier) returns (Supplier) {}
+    rpc Remove (SupplierID) returns (Empty) {}
+}
+
+message Empty {}
+
+message Supplier {
+    required string id = 1;
+    required string name = 2;
+    required string address = 3;
+}
+
+message SupplierList {
+    repeated Supplier suppliers = 1;
+}
+
+message SupplierID {
+    required string id = 1;
+}

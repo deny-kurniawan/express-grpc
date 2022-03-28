@@ -1,0 +1,19 @@
+{
+  "name": "grpc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start_server": "node server.js",
+    "start_client": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "1.5.5",
+    "dotenv": "16.0.0",
+    "express": "4.17.3",
+    "uuid": "8.3.2"
+  }
+}
