@@ -1,24 +1,29 @@
 require('dotenv').config()
 const express = require('express')
 
-const client = require('./client')
+const { SupplierService } = require('./client')
 
 const app = express()
 const PORT = process.env.CLIENT_PORT || 3000
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    client.getAll(null, (err, data) => {
-        if (!err) {
-            res.send({ data: data.suppliers })
-        } else {
-            console.log('error GET:::', err)
-        }
-    })
+app.get('/', async (req, res) => {
+    try {
+        const supplier = await SupplierService.getSupplierList({})
+        res.send({
+            message: 'success',
+            data: supplier.suppliers
+        })
+    } catch (error) {
+        res.status(500).send({
+            message: 'Internal server error',
+            data: null
+        })
+    }
 })
 
-app.post('/', (req, res) => {
+app.post('/', async (req, res) => {
     const rawData = req.body
 
     if (!rawData.name) return res.send({ message: 'Name required' })
@@ -29,45 +34,53 @@ app.post('/', (req, res) => {
         address: req.body.address
     }
 
-    client.insert(newSupplier, (err, data) => {
-        if (!err) {
-            res.send({ data })
-        } else {
-            console.log('error POST:::', err)
-        }
-    })
-})
-
-app.put('/', (req, res) => {
-    const rawData = req.body
-
-    if (!rawData.id) return res.send({ message: 'ID required' })
-
-    const newSupplier = {
-        id: req.body.id,
-        name: req.body.name,
-        address: req.body.address
+    try {
+        const data = await SupplierService.createSupplier(newSupplier)
+        res.send({
+            message: 'success',
+            data
+        })
+    } catch (error) {
+        res.status(500).send({
+            message: 'Internal server error',
+            data: null
+        })
     }
-
-    client.update(newSupplier, (err, data) => {
-        if (!err) {
-            res.send({ data })
-        } else {
-            if (err.code == 5) res.send({ message: err.details })
-            console.log('error PUT:::', err)
-        }
-    })
 })
 
-app.delete('/', (req, res) => {
-    const { id } = req.body
+app.put('/:id', async (req, res) => {
+    const rawData = Object.assign(req.body, req.params)
 
-    if (!id) return res.send({ message: 'ID required' })
+    try {
+        const data = await SupplierService.updateSupplier(rawData)
+        res.send({
+            message: 'success',
+            data
+        })
+    } catch (error) {
+        res.status(500).send({
+            message: 'Internal server error',
+            data: null
+        })
+    }
+})
 
-    client.remove({ id }, (err) => {
-        if (err) console.log('error DELETE:::', err)
-        else res.send({ message: 'Delete Success' })
-    })
+app.delete('/:id', async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const data = await SupplierService.deleteSupplier({ id })
+        res.send({
+            message: 'success',
+            data
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            message: 'Internal server error',
+            data: null
+        })
+    }
 })
 
 app.listen(PORT, () => {
