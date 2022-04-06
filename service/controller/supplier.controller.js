@@ -20,7 +20,7 @@ const createSupplier = async (call, callback) => {
 
 const getAll = async (_, callback) => {
     try {
-        const suppliers = await Supplier.find({ id: false }).sort({ _id: -1 });
+        const suppliers = await Supplier.find({ is_deleted: false }).sort({ _id: -1 });
 
         callback(null, { suppliers });
     } catch (error) {
